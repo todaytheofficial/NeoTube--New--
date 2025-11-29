@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoTube - <%= video.title %></title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <div class="logo"><a href="/">NeoTube</a></div>
+        <div class="menu"><a href="/">Back to Home</a></div>
+    </nav>
+
+    <div class="watch-container">
+        <video controls autoplay class="main-player">
+            <source src="/uploads/<%= video.filename %>" type="video/mp4">
+        </video>
+       <div class="video-details">
+            <h1><%= video.title %></h1>
+            
+            <div class="actions-bar">
+                <div class="stats">
+                    <span style="color: var(--secondary-text);"><%= video.views %> views</span>
+                </div>
+                
+                <div class="buttons">
+                    <% if (user) { %>
+                        <button class="btn-action" onclick="rateVideo('like')">
+                            <i class="fas fa-thumbs-up"></i> <span id="likeCount"><%= likes %></span>
+                        </button>
+                        <button class="btn-action" onclick="rateVideo('dislike')">
+                            <i class="fas fa-thumbs-down"></i> <span id="dislikeCount"><%= dislikes %></span>
+                        </button>
+                    <% } else { %>
+                        <span style="color: var(--secondary-text);">Login to rate</span>
+                    <% } %>
+                </div>
+            </div>
+
+<div class="author-row">
+    <a href="/channel/<%= video.username %>/<%= video.user_id %>">
+        <img src="/uploads/<%= video.author_avatar %>" class="avatar">
+    </a>
+    <div>
+        <h3 style="margin:0;">
+            <a href="/channel/<%= video.username %>/<%= video.user_id %>" style="color: inherit;">
+                <%= video.username %>
+            </a>
+        </h3>
+        <span style="font-size: 0.8rem; color: var(--secondary-text);">Video Author</span>
+    </div>
+</div>
+
+            <% if (video.description) { %>
+                <div class="video-description" style="margin-top: 20px; color: var(--secondary-text); line-height: 1.5;">
+                    <p><%= video.description %></p>
+                </div>
+            <% } %>
+            
+        </div>
+
+        <div class="comments-section">
+            <h3><i class="fas fa-comments"></i> Comments</h3>
+            
+            <% if (user) { %>
+                <div class="comment-form">
+                    <input type="text" id="commentInput" placeholder="Leave a comment..." required>
+                    <button onclick="sendComment()">Submit</button>
+                </div>
+            <% } %>
+            
+            <div class="comments-list" id="commentsList">
+                <% comments.forEach(comment => { %>
+                    <div class="comment">
+                        <img src="/uploads/<%= comment.avatar %>" class="avatar-small">
+                        <div>
+                            <strong><%= comment.username %></strong>
+                            <p><%= comment.text %></p>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const videoId = '<%= video.id %>';
+
+        // Listen for like/dislike updates
+        socket.on('update_stats', (data) => {
+            if (data.videoId == videoId) {
+                document.getElementById('likeCount').innerText = data.likes;
+                document.getElementById('dislikeCount').innerText = data.dislikes;
+            }
+        });
+
+        // Listen for new comments
+        socket.on('new_comment', (data) => {
+            if (data.videoId == videoId) {
+                const list = document.getElementById('commentsList');
+                const html = `
+                    <div class="comment">
+                        <img src="/uploads/${data.comment.avatar}" class="avatar-small">
+                        <div>
+                            <strong>${data.comment.username}</strong>
+                            <p>${data.comment.text}</p>
+                        </div>
+                    </div>`;
+                list.insertAdjacentHTML('afterbegin', html); // Add to the top
+            }
+        });
+
+        // Functions to send requests to the server (AJAX)
+        async function rateVideo(type) {
+            await fetch(`/api/${type}/${videoId}`, { method: 'POST' });
+        }
+
+        async function sendComment() {
+            const input = document.getElementById('commentInput');
+            const text = input.value;
+            if (!text) return;
+
+            await fetch(`/api/comment/${videoId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+            input.value = ''; // Clear the input field
+        }
+    </script>
+</body>
+</html>
+

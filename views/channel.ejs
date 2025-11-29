@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoTube - <%= channelUser.username %>'s Channel</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <div class="logo"><a href="/">NeoTube</a></div>
+        <div class="menu">
+            <% if (currentUser) { %>
+                <a href="/upload" class="btn"><i class="fas fa-video"></i> Upload Video</a>
+                <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <% } else { %>
+                <a href="/login"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="/register"><i class="fas fa-user-plus"></i> Register</a>
+            <% } %>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="channel-header" style="display: flex; align-items: center; gap: 20px; padding: 20px 0; border-bottom: 1px solid #333; margin-bottom: 30px;">
+            <img src="/uploads/<%= channelUser.avatar %>" class="avatar" style="width: 80px; height: 80px;">
+            <div>
+                <h2 style="margin: 0; font-size: 2rem;">@<%= channelUser.username %></h2>
+                <p style="color: var(--secondary-text);">User ID: <%= channelUser.id %></p>
+                </div>
+        </div>
+
+        <h3>Videos by <%= channelUser.username %></h3>
+        
+        <div class="video-grid">
+            <% videos.forEach(video => { %>
+                <div class="video-card">
+                    <a href="/watch/<%= video.id %>">
+                        <img src="/uploads/<%= video.thumbnail %>" alt="thumbnail">
+                    </a>
+                    
+                    <div class="video-info">
+                        <img src="/uploads/<%= channelUser.avatar %>" class="avatar-small">
+                        <div>
+                            <a href="/watch/<%= video.id %>">
+                                <h3><%= video.title %></h3>
+                            </a>
+                            <p><%= channelUser.username %> • <%= video.views %> views</p>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+
+            <% if (videos.length === 0) { %>
+                <p style="color: var(--secondary-text);">This channel has no videos yet.</p>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

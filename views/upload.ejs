@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoTube - Upload Video</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav>
+        <div class="logo"><a href="/">NeoTube</a></div>
+    </nav>
+
+    <div class="auth-form">
+        <h2>Upload New Video</h2>
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <label for="title">Video Title:</label>
+            <input type="text" id="title" name="title" placeholder="Enter video title" required>
+
+            <label for="description">Video Description:</label>
+            <textarea id="description" name="description" placeholder="Tell viewers about your video..." rows="4"></textarea> 
+
+            <label for="videoFile">Video File:</label>
+            <input type="file" id="videoFile" name="video" accept="video/*" required>
+
+            <label for="thumbnailFile">Thumbnail Image:</label>
+            <input type="file" id="thumbnailFile" name="thumbnail" accept="image/*" required>
+
+            <button type="submit">Publish Video</button>
+        </form>
+    </div>
+</body>
+</html>
