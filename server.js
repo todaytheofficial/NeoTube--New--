@@ -6,6 +6,7 @@ const path = require('path');
 const http = require('http'); // Для Socket.io
 const { Server } = require("socket.io"); // Сам Socket.io
 const db = require('./database');
+const fs = require('fs'); // Добавляем модуль для работы с файловой системой
 
 const app = express();
 const server = http.createServer(app); // Создаем HTTP сервер
@@ -35,6 +36,12 @@ const storage = multer.diskStorage({
     }
 });
 const upload = multer({ storage: storage });
+
+const uploadDir = path.join(__dirname, 'public/uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+    console.log('Created missing upload directory: public/uploads');
+}
 
 // Middleware для проверки авторизации
 const isAuthenticated = (req, res, next) => {
