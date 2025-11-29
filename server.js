@@ -23,7 +23,7 @@ app.use(session({
     secret: 'neotube_secret_key_strong_random_string',
     resave: false,
     saveUninitialized: false,
-    // cookie: { maxAge: 1000 * 60 * 60 * 24 } <-- УБЕРИТЕ ЭТУ СТРОКУ
+    // cookie: { maxAge: 1000 * 60 * 60 * 24 } <-- УБЕРИТЕ ЭТУ СТРОК
 }));
 
 // Настройка загрузки файлов (Multer)
